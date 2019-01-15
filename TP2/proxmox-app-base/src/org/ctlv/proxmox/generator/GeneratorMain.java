@@ -1,0 +1,166 @@
+package org.ctlv.proxmox.generator;
+
+import java.io.IOException;
+import java.sql.Time;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import javax.security.auth.login.LoginException;
+
+import org.ctlv.proxmox.api.Constants;
+import org.ctlv.proxmox.api.ProxmoxAPI;
+import org.ctlv.proxmox.api.data.LXC;
+import org.ctlv.proxmox.manager.Analyzer;
+import org.json.JSONException;
+
+public class GeneratorMain {
+	
+	static Random rndTime = new Random(new Date().getTime());
+	public static int getNextEventPeriodic(int period) {
+		return period;
+	}
+	public static int getNextEventUniform(int max) {
+		return rndTime.nextInt(max);
+	}
+	public static int getNextEventExponential(int inv_lambda) {
+		float next = (float) (- Math.log(rndTime.nextFloat()) * inv_lambda);
+		return (int)next;
+	}
+	
+	public static void main(String[] args) throws InterruptedException, LoginException, JSONException, IOException {
+		
+	
+
+		int lambda = 30;
+		
+		
+		Map<String, List<LXC>> myCTsPerServer = new HashMap<String, List<LXC>>();
+
+		ProxmoxAPI api = new ProxmoxAPI();
+		Random rndServer = new Random(new Date().getTime());
+		Random rndRAM = new Random(new Date().getTime()); 
+		
+		long memAllowedOnServer1 = (long) (api.getNode(Constants.SERVER1).getMemory_total() * Constants.MAX_THRESHOLD);
+
+		long memAllowedOnServer2 = (long) (api.getNode(Constants.SERVER2).getMemory_total() * Constants.MAX_THRESHOLD);
+		
+		Analyzer analyser = new Analyzer(api, null);
+		int CT_ID_serv1 = 0;
+		int CT_ID_serv2 = 0;
+		while (true) {
+			
+			
+			float memUsedOnServer1 = (float) (api.getNode(Constants.SERVER1).getMemory_used()*Constants.MAX_THRESHOLD);
+			float memOnServer1 = (float) memUsedOnServer1*100/memAllowedOnServer1;
+			System.out.println("Memoire utilise sur le serveur 5 : "+ memOnServer1 +" %");
+			float cpuAllowedserv1 = ( api.getNode(Constants.SERVER1).getCpu()*100);
+			System.out.println(" CPU server 5 : "+ cpuAllowedserv1+ " %");
+			float StorageMaxServer1 =(float)(api.getNode(Constants.SERVER1).getRootfs_total());
+			float StorageUseServer1 =(float)(api.getNode(Constants.SERVER1).getRootfs_used());
+			float storageusage1 = (float)(StorageUseServer1*100/StorageMaxServer1);
+			System.out.println("Utilisation stockage server 5 : "+ storageusage1 + " %");
+			
+			float memUsedOnServer2 = (float) (api.getNode(Constants.SERVER2).getMemory_used()*Constants.MAX_THRESHOLD);
+			float memOnServer2 = (float) memUsedOnServer2*100/memAllowedOnServer2;
+			System.out.println("Memoire utilise sur le serveur 6 : "+ memOnServer2 +" %");
+			float cpuAllowedserv2 = ( api.getNode(Constants.SERVER2).getCpu()*100);
+			System.out.println(" CPU server 6 : "+ cpuAllowedserv2+ " %");
+			float StorageMaxServer2 =(float)(api.getNode(Constants.SERVER2).getRootfs_total());
+			float StorageUseServer2 =(float)(api.getNode(Constants.SERVER2).getRootfs_used());
+			float storageusage2 = (float)(StorageUseServer2*100/StorageMaxServer2);
+			System.out.println("Utilisation stockage server 6 : "+ storageusage2 + " %");
+			
+
+			
+			// Memoire autorisee sur chaque serveur
+			float memRatioOnServer1 = 16;
+			
+			float memRatioOnServer2 = 16;
+			
+			
+			
+			// code de test pour la création et la suppression car serveur trop encombré en mémoire
+			
+			/*List<LXC> ctsbis = api.getCTs(Constants.SERVER1);
+			int idbis;
+			for (LXC lxc : ctsbis) {
+				idbis = Integer.parseInt(lxc.getVmid());
+				if (idbis == 4600) {
+					System.out.println(lxc.getStatus());
+					if( lxc.getStatus().equals("running")) {
+						System.out.println("Im there");
+						api.stopCT(Constants.SERVER1, Integer.toString(4600));
+						Thread.sleep(5000);
+					}
+					api.deleteCT(Constants.SERVER1, Integer.toString(4600));	
+					Thread.sleep(5000);
+					System.out.println("CT deleted");
+				}
+			}
+			api.createCT(Constants.SERVER1, Integer.toString(4600), "newtoto", (long)(512));
+			Thread.sleep(25000);
+			api.startCT(Constants.SERVER1, Integer.toString(4600));
+			
+			*/
+			
+			if (memOnServer1 < memRatioOnServer1 && memOnServer2 < memRatioOnServer2) {  // Exemple de condition de l'arr�t de la g�n�ration de CTs
+				
+				// choisir un serveur al�atoirement avec les ratios sp�cifi�s 66% vs 33%
+				String serverName;
+				String CT_name;
+				int CT_id =(int)( Constants.CT_BASE_ID)*100;
+				if (rndServer.nextFloat() < Constants.CT_CREATION_RATIO_ON_SERVER1) {
+					serverName = Constants.SERVER1;
+					CT_id = CT_id + CT_ID_serv1;
+					CT_ID_serv1= (CT_ID_serv1 + 1)%100;
+				}
+				else {
+					serverName = Constants.SERVER2;
+					CT_id = CT_id + CT_ID_serv2;
+					CT_ID_serv2= (CT_ID_serv2 + 1)%100;
+				}
+				// cr�er un contenaire sur ce serveur
+				CT_name = Constants.CT_BASE_NAME + Integer.toString(CT_id);
+				System.out.println("CT ID : "+ Integer.toString(CT_id));
+				System.out.println("CT_name "+ CT_name);
+				List<LXC> cts = api.getCTs(serverName);
+				int id;
+				for (LXC lxc : cts) {
+					id = Integer.parseInt(lxc.getVmid());
+					
+					if (id == CT_id) {
+						System.out.println(lxc.getStatus());
+						if( lxc.getStatus().equals("running")) {
+
+							api.stopCT(serverName, Integer.toString(CT_id));
+							Thread.sleep(5000);
+						}
+						api.deleteCT(serverName, Integer.toString(CT_id));	
+						Thread.sleep(5000);
+						System.out.println("CT deleted");
+					}
+				}
+				api.createCT(serverName, Integer.toString(CT_id), CT_name,(long)(512) );
+				Thread.sleep(25000);
+				api.startCT(serverName, Integer.toString(CT_id));
+				System.out.println("CT n°"+CT_id+" crée sur le serveur "+serverName);
+								
+				// planifier la prochaine cr�ation
+				int timeToWait = getNextEventExponential(lambda); // par exemple une loi expo d'une moyenne de 30sec
+				
+				// attendre jusqu'au prochain �v�nement
+				Thread.sleep(1000 * timeToWait);
+			}
+			else {
+				System.out.println("Servers are loaded, waiting ...");
+				Thread.sleep(Constants.GENERATION_WAIT_TIME* 1000);
+			}
+		}
+		
+	}
+
+}

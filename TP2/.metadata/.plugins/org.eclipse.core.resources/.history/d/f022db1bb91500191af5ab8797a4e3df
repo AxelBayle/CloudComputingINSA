@@ -1,0 +1,50 @@
+package org.ctlv.proxmox.manager;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.security.auth.login.LoginException;
+
+import org.ctlv.proxmox.api.Constants;
+import org.ctlv.proxmox.api.ProxmoxAPI;
+import org.ctlv.proxmox.api.data.LXC;
+import org.json.JSONException;
+
+public class Analyzer {
+	ProxmoxAPI api;
+	Controller controller;
+	
+	public Analyzer(ProxmoxAPI api, Controller controller) {
+		this.api = api;
+		this.controller = controller;
+	}
+	
+	public void analyze(Map<String, List<LXC>> myCTsPerServer) throws InterruptedException, LoginException, JSONException, IOException  {
+
+		long memAllowedOnServer1 = (long) (api.getNode(Constants.SERVER1).getMemory_total() * Constants.MAX_THRESHOLD);
+
+		long memAllowedOnServer2 = (long) (api.getNode(Constants.SERVER2).getMemory_total() * Constants.MAX_THRESHOLD);
+		float memUsedOnServer1 = (float) (api.getNode(Constants.SERVER1).getMemory_used()*Constants.MAX_THRESHOLD);
+		float memOnServer1 = (float) memUsedOnServer1*100/memAllowedOnServer1;
+		System.out.println("Memoire utilise sur le serveur 5 : "+ memOnServer1 +" %");
+		float cpuAllowedserv1 = ( api.getNode(Constants.SERVER1).getCpu()*100);
+		System.out.println(" CPU server 5 : "+ cpuAllowedserv1+ " %");
+		float StorageMaxServer1 =(float)(api.getNode(Constants.SERVER1).getRootfs_total());
+		float StorageUseServer1 =(float)(api.getNode(Constants.SERVER1).getRootfs_used());
+		float storageusage1 = (float)(StorageUseServer1*100/StorageMaxServer1);
+		System.out.println("Utilisation stockage server 5 : "+ storageusage1 + " %");
+		
+		float memUsedOnServer2 = (float) (api.getNode(Constants.SERVER2).getMemory_used()*Constants.MAX_THRESHOLD);
+		float memOnServer2 = (float) memUsedOnServer2*100/memAllowedOnServer2;
+		System.out.println("Memoire utilise sur le serveur 6 : "+ memOnServer2 +" %");
+		float cpuAllowedserv2 = ( api.getNode(Constants.SERVER2).getCpu()*100);
+		System.out.println(" CPU server 6 : "+ cpuAllowedserv2+ " %");
+		float StorageMaxServer2 =(float)(api.getNode(Constants.SERVER2).getRootfs_total());
+		float StorageUseServer2 =(float)(api.getNode(Constants.SERVER2).getRootfs_used());
+		float storageusage2 = (float)(StorageUseServer2*100/StorageMaxServer2);
+		System.out.println("Utilisation stockage server 6 : "+ storageusage2 + " %");
+		
+	}
+
+}

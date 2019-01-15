@@ -1,0 +1,28 @@
+package org.ctlv.proxmox.manager;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.security.auth.login.LoginException;
+
+import org.ctlv.proxmox.api.Constants;
+import org.ctlv.proxmox.api.ProxmoxAPI;
+import org.ctlv.proxmox.api.data.LXC;
+import org.json.JSONException;
+
+public class Analyzer {
+	ProxmoxAPI api;
+	Controller controller;
+	
+	public Analyzer(ProxmoxAPI api, Controller controller) {
+		this.api = api;
+		this.controller = controller;
+	}
+	
+	public void analyze(Map<String, List<LXC>> myCTsPerServer) throws InterruptedException, LoginException, JSONException, IOException  {
+		
+		
+	}
+
+}

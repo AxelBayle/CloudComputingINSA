@@ -1,0 +1,26 @@
+package org.ctlv.proxmox.manager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.ctlv.proxmox.api.Constants;
+import org.ctlv.proxmox.api.ProxmoxAPI;
+import org.ctlv.proxmox.api.data.LXC;
+
+public class ManagerMain {
+
+	public static void main(String[] args) throws Exception {
+		
+		// Initialisation
+		ProxmoxAPI api = new ProxmoxAPI();
+		Controller controller = new Controller(api);
+		Analyzer analyzer = new Analyzer(api,controller);
+		
+		
+		Monitor monitor=new Monitor(api, analyzer);
+		monitor.run();
+		
+	}
+}

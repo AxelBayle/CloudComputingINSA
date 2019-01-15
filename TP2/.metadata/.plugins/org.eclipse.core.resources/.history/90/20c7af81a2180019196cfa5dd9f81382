@@ -1,0 +1,45 @@
+package org.ctlv.proxmox.manager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.ctlv.proxmox.api.Constants;
+import org.ctlv.proxmox.api.ProxmoxAPI;
+import org.ctlv.proxmox.api.data.LXC;
+
+public class ManagerMain {
+
+	public static void main(String[] args) throws Exception {
+		
+		// to do
+		ProxmoxAPI api = new ProxmoxAPI();
+		Controller controller = new Controller(api);
+		Analyzer analyzer = new Analyzer(api,controller);
+		Map<String, List<LXC>> myCTsPerServer = new HashMap<String, List<LXC>>();
+		
+		
+		List<LXC> ctserver_1 = api.getCTs(Constants.SERVER1);
+		List<LXC> myctserver_1 = new ArrayList<LXC> () ;
+		for ( LXC lxc : ctserver_1) {
+			if (lxc.getName().contains(Constants.CT_BASE_NAME)) {
+				myctserver_1.add(lxc);
+			}
+		}
+		
+		List<LXC> ctserver_2 = api.getCTs(Constants.SERVER2);
+		List<LXC> myctserver_2 = new ArrayList<LXC> () ;
+		for ( LXC lxc : ctserver_2) {
+			if (lxc.getName().contains(Constants.CT_BASE_NAME)) {
+				myctserver_2.add(lxc);
+			}
+		}
+		
+		myCTsPerServer.put(Constants.SERVER1, ctserver_1);
+		myCTsPerServer.put(Constants.SERVER2, ctserver_2);
+		
+		analyzer.analyze(myCTsPerServer);
+	}
+
+}
