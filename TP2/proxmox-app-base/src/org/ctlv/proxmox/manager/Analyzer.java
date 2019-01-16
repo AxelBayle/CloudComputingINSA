@@ -105,6 +105,12 @@ public class Analyzer {
 		} else if (RamS2 >mem_serv2_5) {
 			controller.offLoad(Constants.SERVER2);
 			System.out.println(" Arret CT sur server 6");
+		} else if ( (RamS1>mem_serv1_3)&&(RamS2>mem_serv2_3)) {
+			if (RamS1 > RamS2) {
+				controller.migrateFromTo(Constants.SERVER1, Constants.SERVER2);
+			}else {
+				controller.migrateFromTo(Constants.SERVER2, Constants.SERVER1);
+			}
 		} else if ( RamS1 > mem_serv1_3) {
 			controller.migrateFromTo(Constants.SERVER1, Constants.SERVER2);
 			System.out.println("Migration de 5 vers 6");
