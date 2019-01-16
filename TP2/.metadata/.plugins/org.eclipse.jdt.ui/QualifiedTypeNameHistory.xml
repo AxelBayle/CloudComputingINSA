@@ -2,9 +2,16 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="com.enterpriseve.proxmoxve.api.Client"/>
 <fullyQualifiedTypeName name="org.json.JSONArray"/>
-<fullyQualifiedTypeName name="java.lang.Integer"/>
 <fullyQualifiedTypeName name="java.sql.Time"/>
 <fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
+<fullyQualifiedTypeName name="java.lang.Thread"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="org.ctlv.proxmox.api.data.LXC"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="com.sun.xml.internal.bind.v2.schemagen.xmlschema.Appinfo"/>
 <fullyQualifiedTypeName name="org.ctlv.proxmox.manager.Analyzer"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="com.sun.corba.se.impl.orbutil.closure.Constant"/>
 <fullyQualifiedTypeName name="org.ctlv.proxmox.api.Constants"/>
+<fullyQualifiedTypeName name="java.lang.Float"/>
 </qualifiedTypeNameHistroy>

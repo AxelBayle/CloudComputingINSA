@@ -70,6 +70,44 @@ public class Monitor implements Runnable {
 			}
 		}
 	}
+
+	
+	public void deletemyCT() throws LoginException, JSONException, IOException, InterruptedException {
+		
+		List<LXC> ctserver_1 = api.getCTs(Constants.SERVER1);
+		for ( LXC lxc : ctserver_1) {
+			if (lxc.getName().contains(Constants.CT_BASE_NAME)) {				
+				System.out.println("Deleting CT n°"+lxc.getVmid()+ " sur serveur "+ Constants.SERVER1);
+				if( lxc.getStatus().equals("running")) {
+
+					api.stopCT(Constants.SERVER1, lxc.getVmid());
+					Thread.sleep(5000);
+				}
+				api.deleteCT(Constants.SERVER1, lxc.getVmid());	
+				Thread.sleep(5000);
+				System.out.println("CT deleted");
+				}
+				
+			}	
+		
+		List<LXC> ctserver_2 = api.getCTs(Constants.SERVER2);
+		for ( LXC lxc : ctserver_2) {
+			if (lxc.getName().contains(Constants.CT_BASE_NAME)) {				
+				System.out.println("Deleting CT n°"+lxc.getVmid()+ " sur serveur "+ Constants.SERVER2);
+				if( lxc.getStatus().equals("running")) {
+
+					api.stopCT(Constants.SERVER2, lxc.getVmid());
+					Thread.sleep(5000);
+				}
+				api.deleteCT(Constants.SERVER2, lxc.getVmid());	
+				Thread.sleep(5000);
+				System.out.println("CT deleted");
+				}
+				
+			}		
+		System.out.println("Cleaning finished ! Good job !");
+		
+	}
 }
 	
 		

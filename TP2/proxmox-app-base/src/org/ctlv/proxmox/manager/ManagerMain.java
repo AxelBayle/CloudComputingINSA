@@ -20,7 +20,7 @@ public class ManagerMain {
 		
 		
 		Monitor monitor=new Monitor(api, analyzer);
-		monitor.run();
-		
+		//monitor.run();
+		monitor.deletemyCT();
 	}
 }

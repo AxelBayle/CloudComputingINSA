@@ -82,9 +82,13 @@ public class Analyzer {
 		}
 		long mem_serv1_8 =(long)(api.getNode(Constants.SERVER1).getMemory_total()*0.08);
 		long mem_serv1_12 =(long)(api.getNode(Constants.SERVER1).getMemory_total()*0.12);
+		long mem_serv1_3 =(long)(api.getNode(Constants.SERVER1).getMemory_total()*0.03);
+		long mem_serv1_5 =(long)(api.getNode(Constants.SERVER1).getMemory_total()*0.05);
 		
 		long mem_serv2_8 =(long)(api.getNode(Constants.SERVER2).getMemory_total()*0.08);
 		long mem_serv2_12 =(long)(api.getNode(Constants.SERVER2).getMemory_total()*0.12);
+		long mem_serv2_3 =(long)(api.getNode(Constants.SERVER2).getMemory_total()*0.03);
+		long mem_serv2_5 =(long)(api.getNode(Constants.SERVER2).getMemory_total()*0.05);
 		
 		float use_ram_mycts_server1 =((float)RamS1/(float)api.getNode(Constants.SERVER1).getMemory_total()*100);
 		float use_ram_mycts_server2 =((float)RamS2/(float)api.getNode(Constants.SERVER2).getMemory_total()*100);
@@ -95,16 +99,16 @@ public class Analyzer {
 		// action en fonction de la memoire utilisee
 		
 		Controller controller = new Controller(api);
-		if (RamS1 > mem_serv1_12) {
+		if (RamS1 > mem_serv1_5) {
 			controller.offLoad(Constants.SERVER1);
 			System.out.println(" Arret CT sur server 5");
-		} else if (RamS2 >mem_serv2_12) {
+		} else if (RamS2 >mem_serv2_5) {
 			controller.offLoad(Constants.SERVER2);
 			System.out.println(" Arret CT sur server 6");
-		} else if ( RamS1 > mem_serv1_8) {
+		} else if ( RamS1 > mem_serv1_3) {
 			controller.migrateFromTo(Constants.SERVER1, Constants.SERVER2);
 			System.out.println("Migration de 5 vers 6");
-		} else if ( RamS2 > mem_serv1_8) {
+		} else if ( RamS2 > mem_serv1_3) {
 			controller.migrateFromTo(Constants.SERVER2, Constants.SERVER1);
 			System.out.println("Migration de 6 vers 5");
 		}else {

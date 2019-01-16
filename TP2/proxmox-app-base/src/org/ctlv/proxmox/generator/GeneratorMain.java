@@ -49,8 +49,7 @@ public class GeneratorMain {
 		long memAllowedOnServer2 = (long) (api.getNode(Constants.SERVER2).getMemory_total() * Constants.MAX_THRESHOLD);
 		
 		Analyzer analyser = new Analyzer(api, null);
-		int CT_ID_serv1 = 0;
-		int CT_ID_serv2 = 0;
+		int CT_ID_serv = 25;
 		while (true) {
 			
 			
@@ -109,25 +108,29 @@ public class GeneratorMain {
 			
 			if (memOnServer1 < memRatioOnServer1 && memOnServer2 < memRatioOnServer2) {  // Exemple de condition de l'arr�t de la g�n�ration de CTs
 				
-				// choisir un serveur al�atoirement avec les ratios sp�cifi�s 66% vs 33%
+				// choisir un serveur al�atoirement avec les ratios sp�cifi�s 66% vs 33% et genere nom et id
 				String serverName;
 				String CT_name;
 				int CT_id =(int)( Constants.CT_BASE_ID)*100;
 				if (rndServer.nextFloat() < Constants.CT_CREATION_RATIO_ON_SERVER1) {
 					serverName = Constants.SERVER1;
-					CT_id = CT_id + CT_ID_serv1;
-					CT_ID_serv1= (CT_ID_serv1 + 1)%100;
+
 				}
 				else {
 					serverName = Constants.SERVER2;
-					CT_id = CT_id + CT_ID_serv2;
-					CT_ID_serv2= (CT_ID_serv2 + 1)%100;
+					
 				}
-				// cr�er un contenaire sur ce serveur
+				CT_id = CT_id + CT_ID_serv;
+				CT_ID_serv= (CT_ID_serv + 1)%100;
+				
 				CT_name = Constants.CT_BASE_NAME + Integer.toString(CT_id);
+				//print verif
 				System.out.println("CT ID : "+ Integer.toString(CT_id));
 				System.out.println("CT_name "+ CT_name);
-				List<LXC> cts = api.getCTs(serverName);
+				System.out.println("Server : "+ serverName);
+				
+				//On verifie qu'il n existe pas sur le serv 1
+				List<LXC> cts = api.getCTs(Constants.SERVER1);
 				int id;
 				for (LXC lxc : cts) {
 					id = Integer.parseInt(lxc.getVmid());
@@ -136,16 +139,35 @@ public class GeneratorMain {
 						System.out.println(lxc.getStatus());
 						if( lxc.getStatus().equals("running")) {
 
-							api.stopCT(serverName, Integer.toString(CT_id));
+							api.stopCT(Constants.SERVER1, Integer.toString(CT_id));
 							Thread.sleep(5000);
 						}
-						api.deleteCT(serverName, Integer.toString(CT_id));	
+						api.deleteCT(Constants.SERVER1, Integer.toString(CT_id));	
 						Thread.sleep(5000);
 						System.out.println("CT deleted");
 					}
 				}
+				//On verifie qu'il n existe pas sur le serv 2
+				List<LXC> cts2 = api.getCTs(Constants.SERVER2);
+				int id2;
+				for (LXC lxc : cts2) {
+					id2 = Integer.parseInt(lxc.getVmid());
+					if (id2 == CT_id) {
+						System.out.println(lxc.getStatus());
+						if( lxc.getStatus().equals("running")) {
+
+							api.stopCT(Constants.SERVER2, Integer.toString(CT_id));
+							Thread.sleep(5000);
+						}
+						api.deleteCT(Constants.SERVER2, Integer.toString(CT_id));	
+						Thread.sleep(5000);
+						System.out.println("CT deleted");
+					}
+				}
+				
+				// on cree et on sleep le temps de creer
 				api.createCT(serverName, Integer.toString(CT_id), CT_name,(long)(512) );
-				Thread.sleep(25000);
+				Thread.sleep(30000);
 				api.startCT(serverName, Integer.toString(CT_id));
 				System.out.println("CT n°"+CT_id+" crée sur le serveur "+serverName);
 								

@@ -1,1 +1,1 @@
-[[{"location":"/home/bayle-sa/Insa/5ISS/cloud/TP2/proxmox-app-base","type":"PROJECT","hints":{"PROJECT_NAME":"proxmox-app-base"}},"ABSENT"],[{"location":"/usr/local/insa/jdk1.8.0_131_x64","type":"JRE","hints":{}},"jre:jre:1.8.0"]]
+[[{"location":"/usr/local/insa/jdk1.8.0_131_x64","type":"JRE","hints":{}},"jre:jre:1.8.0"],[{"location":"/home/bayle-sa/Insa/5ISS/cloud/TP2/proxmox-app-base","type":"PROJECT","hints":{"PROJECT_NAME":"proxmox-app-base"}},"ABSENT"]]
